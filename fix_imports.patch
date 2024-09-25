@@ -1,0 +1,27 @@
+--- src/wfuzz-3.1.0/src/wfuzz/externals/moduleman/loader.py	2020-11-06 11:41:59.000000000 +0100
++++ loader.py	2024-09-26 00:08:22.297415546 +0200
+@@ -1,8 +1,9 @@
+ import inspect
+ import logging
+-import imp
+ import os.path
+-
++import importlib
++import importlib.util
++import importlib.machinery
+ 
+ class IModuleLoader:
+     def __init__(self, **params):
+@@ -58,8 +59,10 @@
+         module = None
+ 
+         try:
+-            exten_file, filename, description = imp.find_module(fn, [dirname])
+-            module = imp.load_module(fn, exten_file, filename, description)
++            spec = importlib.machinery.PathFinder.find_spec(fn, [dirname])
++            if spec is None:
++                raise ImportError("whatever")
++            module = importlib.util.module_from_spec(spec)
+         except ImportError as msg:
+             self.__logger.critical(
+                 "__load_py_from_file. Filename: %s Exception, msg=%s" % (filename, msg)

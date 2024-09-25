@@ -23,6 +23,12 @@ build() {
     make SPHINXOPTS='-Q -j auto' man html
 }
 
+prepare() {
+    cd "$_name"
+    patch -p0 "$srcdir/wfuzz-$pkgver/setup.py" "$srcdir/../fix_setup.patch"
+    patch -p0 "$srcdir/wfuzz-$pkgver/src/wfuzz/externals/moduleman/loader.py" "$srcdir/../fix_imports.patch"
+}
+
 package() {
     cd "${srcdir}/${pkgname}-${pkgver}"
 
